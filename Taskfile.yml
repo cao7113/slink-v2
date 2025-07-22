@@ -1,0 +1,22 @@
+# https://taskfile.dev/usage/
+version: "3"
+tasks:
+  default: mix test
+  sh: iex --erl "-kernel shell_history enabled" -S mix
+  run: iex --erl "-kernel shell_history enabled" -S mix phx.server
+  r6:
+    env:
+      # local livebook deployed with ipv6
+      ERL_AFLAGS: "-proto_dist inet6_tcp -kernel shell_history enabled"
+      # RELEASE_DISTRIBUTION: name
+    cmds:
+      # iex(slink2@mac.local)1>
+      - iex --cookie slink2 --name slink2 -S mix phx.server
+
+  fmt: mix format
+
+  ## DB ops
+  pg: pgcli slink_dev_v2
+
+  setup: |
+    mix deps.get

@@ -13,7 +13,7 @@ config :slink, Slink.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "slink_dev",
+  database: "slink_dev_v2",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
