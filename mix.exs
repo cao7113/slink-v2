@@ -59,7 +59,12 @@ defmodule Slink.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+
+      # Dev Tools
+      # https://github.com/zachdaniel/git_ops?tab=readme-ov-file#installation-with-igniter
+      # mix igniter.install git_ops
+      {:igniter, "~> 0.5", only: [:dev, :test]}
     ]
   end
 
