@@ -63,6 +63,7 @@ defmodule Slink.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
+      {:endon, "~> 2.0"},
 
       # Dev Tools
       {:igniter, "~> 0.5", only: [:dev, :test]}

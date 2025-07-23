@@ -16,7 +16,7 @@ tasks:
   fmt: mix format
 
   ## DB ops
-  pg: pgcli slink_dev_v2
+  pg: pgcli slink_v2_dev
 
   setup: |
     mix deps.get

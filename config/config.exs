@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+config :endon,
+  repo: Slink.Repo
+
 config :slink, :scopes,
   user: [
     default: true,

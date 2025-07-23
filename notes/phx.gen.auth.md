@@ -1,5 +1,51 @@
 # Auth
 
+## API token
+
+https://hexdocs.pm/phoenix/1.8.0-rc.4/api_authentication.html#adding-api-functions-to-the-context
+
+```
+user = User.first
+api_token = Accounts.create_user_api_token(user)
+{:ok, fetched_user} = Accounts.fetch_user_by_api_token(api_token)
+user === fetched_user
+```
+
+## Dev email
+
+```
+## Confirm email
+
+==============================
+
+Hi dev@a.b,
+
+You can confirm your account by visiting the URL below:
+
+http://localhost:4000/users/log-in/tS6s0MAXg9pevbLOdPYcWmm3KKHBxxiWJZlDrOsFvjk
+
+If you didn't create an account with us, please ignore this.
+
+==============================
+
+## Login email
+
+==============================
+
+Hi dev@a.b,
+
+You can log into your account by visiting the URL below:
+
+http://localhost:4000/users/log-in/DPQJ2IGlImd1Ikbvf2-4w6-Qzpow64fP3MEoQkQdMVE
+
+If you didn't request this email, please ignore this.
+
+==============================
+
+```
+
+## phx.gen.auth
+
 ```
 $ mix phx.gen.auth Accounts User users
 An authentication system can be created in two different ways:

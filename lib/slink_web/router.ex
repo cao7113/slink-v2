@@ -15,6 +15,7 @@ defmodule SlinkWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_current_scope_for_api_user
   end
 
   scope "/", SlinkWeb do
@@ -23,10 +24,14 @@ defmodule SlinkWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SlinkWeb do
-  #   pipe_through :api
-  # end
+  # API
+  scope "/api", SlinkWeb.Api do
+    pipe_through :api
+
+    get "/", ToolsController, :home
+    get "/ping", ToolsController, :ping
+    get "/info", ToolsController, :info
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:slink, :dev_routes) do

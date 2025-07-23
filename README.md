@@ -1,4 +1,4 @@
-# Slink
+# SlinkV2
 
 To start your Phoenix server:
 
