@@ -1,5 +1,9 @@
 # https://taskfile.dev/usage/
 version: "3"
+vars:
+  LOCAL_MAGIC_COOKIE: slink
+  DOCKER_IMG_NAME: slinkv2
+  DOCKER_CONTAINER_NAME: slinkv2
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
@@ -12,8 +16,14 @@ tasks:
     cmds:
       # iex(slink2@mac.local)1>
       - iex --cookie slink2 --name slink2 -S mix phx.server
-
   fmt: mix format
+
+  ## DB ops
+  pg: pgcli slink_v2_dev
+  db.reset: |
+    mix ecto.reset.force
+    MIX_ENV=test mix ecto.reset.force
+    echo reset dev and test db
 
   ## Git ops
   ops.init: mix git_ops.release --initial
@@ -28,12 +38,28 @@ tasks:
     # run after add igniter dep in mix.exs
     mix igniter.install git_ops
 
-  ## DB ops
-  pg: pgcli slink_v2_dev
-  db.reset: |
-    mix ecto.reset.force
-    MIX_ENV=test mix ecto.reset.force
-    echo reset dev and test db
+  ## Docker
+  dk.build: docker build -t {{.DOCKER_IMG_NAME}} .
+  # dk.run: |
+  #   task dk.build
+  #   docker rm -f {{.DOCKER_CONTAINER_NAME}}
+  #   docker run --name {{.DOCKER_CONTAINER_NAME}} --rm -it -p 4010:4000 \
+  #     -e "PHX_SERVER=true" \
+  #     -e "SECRET_KEY_BASE=mock-test-secret-key-base" \
+  #     -e "RELEASE_DISTRIBUTION=name" \
+  #     -e "RELEASE_NODE=slink@{{.DOCKER_CONTAINER_NAME}}.orb.local" \
+  #     -e "RELEASE_COOKIE={{.LOCAL_MAGIC_COOKIE}}" \
+  #     {{.DOCKER_IMG_NAME}} bin/slink start_iex
+  dk.iex: docker exec -it {{.DOCKER_CONTAINER_NAME}} bin/slink remote
+  dk.in: docker exec -it {{.DOCKER_CONTAINER_NAME}} sh
+  dk.sh: docker run --rm -it {{.DOCKER_IMG_NAME}} sh
+  dk.info: |
+    docker exec -it {{.DOCKER_CONTAINER_NAME}} bin/slink
+  dk.ping: curl https://{{.DOCKER_CONTAINER_NAME}}.orb.local/ping | jq
+  dk.down: docker stop {{.DOCKER_CONTAINER_NAME}}
+  dk.test: |
+    docker compose version
+    docker compose up --quiet-pull --exit-code-from curl # --abort-on-container-exit
 
   setup: |
     mix deps.get
