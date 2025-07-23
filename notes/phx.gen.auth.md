@@ -1,16 +1,5 @@
 # Auth
 
-## API token
-
-https://hexdocs.pm/phoenix/1.8.0-rc.4/api_authentication.html#adding-api-functions-to-the-context
-
-```
-user = User.first
-api_token = Accounts.create_user_api_token(user)
-{:ok, fetched_user} = Accounts.fetch_user_by_api_token(api_token)
-user === fetched_user
-```
-
 ## Dev email
 
 ```

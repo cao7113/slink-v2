@@ -18,5 +18,11 @@ tasks:
   ## DB ops
   pg: pgcli slink_v2_dev
 
+  ## test
+  db.reset: |
+    mix ecto.reset.force
+    MIX_ENV=test mix ecto.reset.force
+    echo reset dev and test db
+
   setup: |
     mix deps.get

@@ -1,0 +1,43 @@
+defmodule SlinkWeb.Api.LinkController do
+  use SlinkWeb, :controller
+
+  alias Slink.Links
+  alias Slink.Links.Link
+
+  action_fallback SlinkWeb.FallbackController
+
+  def index(conn, _params) do
+    links = Links.list_links(conn.assigns.current_scope)
+    render(conn, :index, links: links)
+  end
+
+  def create(conn, %{"link" => link_params}) do
+    with {:ok, %Link{} = link} <- Links.create_link(conn.assigns.current_scope, link_params) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", ~p"/api/links/#{link}")
+      |> render(:show, link: link)
+    end
+  end
+
+  def show(conn, %{"id" => id}) do
+    link = Links.get_link!(conn.assigns.current_scope, id)
+    render(conn, :show, link: link)
+  end
+
+  def update(conn, %{"id" => id, "link" => link_params}) do
+    link = Links.get_link!(conn.assigns.current_scope, id)
+
+    with {:ok, %Link{} = link} <- Links.update_link(conn.assigns.current_scope, link, link_params) do
+      render(conn, :show, link: link)
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    link = Links.get_link!(conn.assigns.current_scope, id)
+
+    with {:ok, %Link{}} <- Links.delete_link(conn.assigns.current_scope, link) do
+      send_resp(conn, :no_content, "")
+    end
+  end
+end

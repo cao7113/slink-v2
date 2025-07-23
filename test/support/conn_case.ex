@@ -71,6 +71,18 @@ defmodule SlinkWeb.ConnCase do
     |> Plug.Conn.put_session(:user_token, token)
   end
 
+  def put_user_api_token(conn, opts \\ []) do
+    api_token =
+      Keyword.get_lazy(opts, :api_token, fn ->
+        user = Keyword.fetch!(opts, :user)
+        token = Slink.Accounts.create_user_api_token(user)
+        "Bearer #{token}"
+      end)
+
+    conn
+    |> Plug.Conn.put_req_header("authorization", api_token)
+  end
+
   defp maybe_set_token_authenticated_at(_token, nil), do: nil
 
   defp maybe_set_token_authenticated_at(token, authenticated_at) do

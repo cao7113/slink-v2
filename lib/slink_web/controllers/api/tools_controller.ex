@@ -10,7 +10,7 @@ defmodule SlinkWeb.Api.ToolsController do
   end
 
   def info(conn, _params) do
-    user = conn.assigns.current_scope[:user]
+    user = (conn.assigns.current_scope || %{}) |> Map.get(:user)
 
     body =
       if user do
@@ -21,7 +21,9 @@ defmodule SlinkWeb.Api.ToolsController do
           }
         }
       else
-        %{msg: "Unauthorized"}
+        %{
+          msg: "Unauthorized"
+        }
       end
 
     json(conn, body)

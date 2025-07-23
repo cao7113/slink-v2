@@ -75,7 +75,9 @@ defmodule SlinkWeb.UserAuth do
     end
   end
 
-  def fetch_current_scope_for_api_user(conn, _opts) do
+  ## API
+
+  def fetch_current_scope_for_api_user(conn, _opts \\ []) do
     with [<<bearer::binary-size(6), " ", token::binary>>] <-
            get_req_header(conn, "authorization"),
          true <- String.downcase(bearer) == "bearer",
@@ -87,6 +89,20 @@ defmodule SlinkWeb.UserAuth do
         # conn
         # |> send_resp(:unauthorized, "No access for you")
         # |> halt()
+    end
+  end
+
+  @doc """
+  Plug for routes that require the user to be authenticated.
+  """
+  def require_authenticated_api_user(conn, _opts) do
+    if conn.assigns.current_scope && conn.assigns.current_scope.user do
+      conn
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> json(%{message: "Unauthorized user to continue!"})
+      |> halt()
     end
   end
 
@@ -290,19 +306,6 @@ defmodule SlinkWeb.UserAuth do
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/users/log-in")
-      |> halt()
-    end
-  end
-
-  @doc """
-  Plug for routes that require the user to be authenticated.
-  """
-  def require_authenticated_api_user(conn, _opts) do
-    if conn.assigns.current_scope && conn.assigns.current_scope.user do
-      conn
-    else
-      conn
-      |> put_status(401)
       |> halt()
     end
   end

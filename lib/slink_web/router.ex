@@ -25,12 +25,25 @@ defmodule SlinkWeb.Router do
   end
 
   # API
-  scope "/api", SlinkWeb.Api do
+  scope "/api", SlinkWeb do
     pipe_through :api
 
-    get "/", ToolsController, :home
-    get "/ping", ToolsController, :ping
-    get "/info", ToolsController, :info
+    get "/", Api.ToolsController, :home
+    get "/ping", Api.ToolsController, :ping
+    get "/info", Api.ToolsController, :info
+
+    # resources "/links", Api.LinkController, except: [:new, :edit]
+    get "/links", Api.LinkController, :index
+    get "/links/:id", Api.LinkController, :show
+  end
+
+  scope "/api", SlinkWeb do
+    pipe_through [:api, :require_authenticated_api_user]
+
+    post "/links", Api.LinkController, :create
+    put "/links/:id", Api.LinkController, :update
+    patch "/links/:id", Api.LinkController, :update
+    delete "/links/:id", Api.LinkController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
