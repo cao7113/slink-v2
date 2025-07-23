@@ -15,10 +15,21 @@ tasks:
 
   fmt: mix format
 
+  ## Git ops
+  ops.init: mix git_ops.release --initial
+  ops.up: |
+    mix git_ops.release --yes
+    git push --follow-tags
+    fly deploy
+  ops.up.rel: mix git_ops.release
+  ops.up.tag: git push --follow-tags
+  ops.types: mix eh.git.ops.types
+  ops.setup: |
+    # run after add igniter dep in mix.exs
+    mix igniter.install git_ops
+
   ## DB ops
   pg: pgcli slink_v2_dev
-
-  ## test
   db.reset: |
     mix ecto.reset.force
     MIX_ENV=test mix ecto.reset.force
