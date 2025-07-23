@@ -4,6 +4,12 @@ vars:
   LOCAL_MAGIC_COOKIE: slink
   DOCKER_IMG_NAME: slinkv2
   DOCKER_CONTAINER_NAME: slinkv2
+includes:
+  # task f:iex
+  flyio:
+    taskfile: ./Taskfile-flyio.yml
+    aliases: [f, fly]
+    optional: true
 tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix

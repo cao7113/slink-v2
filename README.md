@@ -1,5 +1,12 @@
 # SlinkV2
 
+Refactor Slink from scratch, because:
+
+- phoenix1.8 phx.gen.auth changed greatly based on user-scope
+- want to a better codebase and relearning phoenix
+
+## Develop
+
 To start your Phoenix server:
 
 * Run `mix setup` to install and setup dependencies
