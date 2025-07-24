@@ -72,6 +72,13 @@ defmodule SlinkWeb.Router do
       on_mount: [{SlinkWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+
+      scope "/my", My do
+        live "/links", LinkLive.Index, :index
+        live "/links/new", LinkLive.Form, :new
+        live "/links/:id", LinkLive.Show, :show
+        live "/links/:id/edit", LinkLive.Form, :edit
+      end
     end
 
     post "/users/update-password", UserSessionController, :update_password
@@ -85,6 +92,12 @@ defmodule SlinkWeb.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+
+      # public links show
+      live "/links", LinkLive.Index, :index
+      live "/links/new", LinkLive.Form, :new
+      live "/links/:id", LinkLive.Show, :show
+      live "/links/:id/edit", LinkLive.Form, :edit
     end
 
     post "/users/log-in", UserSessionController, :create

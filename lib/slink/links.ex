@@ -25,6 +25,10 @@ defmodule Slink.Links do
     Phoenix.PubSub.subscribe(Slink.PubSub, "user:#{key}:links")
   end
 
+  def subscribe_links(nil) do
+    # nothing to subscribe
+  end
+
   defp broadcast(%Scope{} = scope, message) do
     key = scope.user.id
 
@@ -40,11 +44,12 @@ defmodule Slink.Links do
       [%Link{}, ...]
 
   """
+
   def list_links(%Scope{} = scope) do
     Repo.all_by(Link, user_id: scope.user.id)
   end
 
-  def list_links(nil) do
+  def list_links(_) do
     Repo.all(Link)
   end
 
@@ -62,11 +67,12 @@ defmodule Slink.Links do
       ** (Ecto.NoResultsError)
 
   """
+
   def get_link!(%Scope{} = scope, id) do
     Repo.get_by!(Link, id: id, user_id: scope.user.id)
   end
 
-  def get_link!(nil, id) do
+  def get_link!(_, id) do
     Repo.get_by!(Link, id: id)
   end
 
