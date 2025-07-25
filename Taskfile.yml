@@ -42,7 +42,7 @@ tasks:
   ops.up: |
     mix git_ops.release --yes
     git push --follow-tags
-    fly deploy
+    # fly deploy
   ops.up.rel: mix git_ops.release
   ops.up.tag: git push --follow-tags
   ops.types: mix eh.git.ops.types
