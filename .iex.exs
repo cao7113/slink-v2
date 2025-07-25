@@ -18,3 +18,6 @@ alias SlinkWeb, as: Web
 
 ## API
 # A.create_user_api_token(A.get_user!(1))
+
+## Remote
+alias Remote, as: R

@@ -49,8 +49,12 @@ defmodule Slink.Links do
     Repo.all_by(Link, user_id: scope.user.id)
   end
 
+  @list_limit 100
   def list_links(_) do
-    Repo.all(Link)
+    Link
+    |> order_by(desc: :updated_at)
+    |> limit(@list_limit)
+    |> Repo.all()
   end
 
   @doc """

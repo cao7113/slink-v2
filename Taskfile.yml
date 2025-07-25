@@ -14,14 +14,14 @@ tasks:
   default: mix test
   sh: iex --erl "-kernel shell_history enabled" -S mix
   run: iex --erl "-kernel shell_history enabled" -S mix phx.server
-  r6:
+  run6:
     env:
       # local livebook deployed with ipv6
       ERL_AFLAGS: "-proto_dist inet6_tcp -kernel shell_history enabled"
       # RELEASE_DISTRIBUTION: name
     cmds:
       # iex(slink2@mac.local)1>
-      - iex --cookie slink2 --name slink2 -S mix phx.server
+      - iex --name slink2 --cookie slink2 -S mix phx.server
   fmt: mix format
 
   ## DB ops
@@ -29,6 +29,7 @@ tasks:
   db.reset: |
     mix ecto.reset.force
     MIX_ENV=test mix ecto.reset.force
+    run/dev.exs
     echo reset dev and test db
 
   ## Git ops
@@ -44,7 +45,43 @@ tasks:
     # run after add igniter dep in mix.exs
     mix igniter.install git_ops
 
-  ## Docker
+  ## Remote Ops with WireGuard opened
+  # https://fly.io/docs/elixir/advanced-guides/clustering-from-home-to-your-app-in-fly/
+  # CLUSTER_APP_NAME=xxx task remote.connect6
+  remote.connect6:
+    aliases:
+      - remote.s2
+      - rc6
+    env:
+      ERL_AFLAGS: "-proto_dist inet6_tcp -kernel shell_history enabled"
+      CLUSTER_APP_NAME: "slink-v2"
+      RELEASE_COOKIE: happy-cookie-not-secret-but-for-cluster
+    cmds:
+      - echo "==Custerning into remote app ${CLUSTER_APP_NAME}"
+      - run/cluster-with-remote.sh
+  remote.s1:
+    env:
+      ERL_AFLAGS: "-proto_dist inet6_tcp -kernel shell_history enabled"
+      CLUSTER_APP_NAME: "slink"
+      RELEASE_COOKIE: slinkfuncookie
+    cmds:
+      - echo "==Custerning into remote app ${CLUSTER_APP_NAME}"
+      - run/cluster-with-remote.sh
+
+  # https://fly.io/docs/elixir/advanced-guides/connect-observer-to-your-app/
+  # NOTE:
+  # - If everything worked and it’s connected, under the Nodes menu you should see the connected remote node.
+  # - live-dashboard is better way!
+  observer:
+    aliases:
+      - observe
+    env:
+      COOKIE: happy-cookie-not-secret-but-for-cluster
+    cmds:
+      - echo "==Observing remote app"
+      - run/observer.sh
+
+  ## Docker run env
   dk.build: docker build -t {{.DOCKER_IMG_NAME}} .
   # dk.run: |
   #   task dk.build

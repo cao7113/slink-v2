@@ -16,8 +16,12 @@ release_command = '/app/bin/migrate'
 PHX_HOST = 'slink-v2.fly.dev'
 PORT = '8080'
 ECTO_IPV6 = 'true'
-# ERL_AFLAGS = '-proto_dist inet6_tcp'
-# RELEASE_DISTRIBUTION = 'name'
+
+## distribution
+ERL_AFLAGS = '-proto_dist inet6_tcp'
+RELEASE_DISTRIBUTION = 'name'
+RELEASE_COOKIE = "happy-cookie-not-secret-but-for-cluster"
+# below dynamic set in rel/env.sh.eex for flyio app
 # RELEASE_NODE = "slink@slink-v2.internal"
 
 [http_service]
@@ -25,7 +29,7 @@ internal_port = 8080
 force_https = true
 auto_stop_machines = 'suspend'
 auto_start_machines = true
-min_machines_running = 0
+min_machines_running = 1
 processes = ['app']
 
 [http_service.concurrency]
