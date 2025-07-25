@@ -17,9 +17,9 @@ defmodule SlinkWeb.Api.LinkControllerTest do
   setup :register_and_log_in_user
 
   setup %{conn: conn, user: user} do
-    json_conn = put_req_header(conn, "accept", "application/json")
-    authed_conn = put_user_api_token(json_conn, user: user)
-    {:ok, unauthed_conn: json_conn, conn: authed_conn}
+    unauthed_conn = put_req_header(conn, "accept", "application/json")
+    authed_conn = put_user_api_token(unauthed_conn, user: user)
+    {:ok, unauthed_conn: unauthed_conn, conn: authed_conn}
   end
 
   describe "index" do
@@ -46,6 +46,10 @@ defmodule SlinkWeb.Api.LinkControllerTest do
                "title" => "some title",
                "url" => "some url"
              } = json_response(conn, 200)["data"]
+
+      # create again with same url
+      conn = post(conn, ~p"/api/links", link: @create_attrs |> Map.put(:title, "new title"))
+      assert json_response(conn, 422)["errors"]["url"] == ["has already been taken"]
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

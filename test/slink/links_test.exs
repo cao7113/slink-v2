@@ -36,6 +36,17 @@ defmodule Slink.LinksTest do
       assert link.title == "some title"
       assert link.url == "some url"
       assert link.user_id == scope.user.id
+
+      # recreate with same url
+      {:error, %Ecto.Changeset{} = changeset} = Links.create_link(scope, valid_attrs)
+
+      assert changeset.errors == [
+               url:
+                 {"has already been taken",
+                  [constraint: :unique, constraint_name: "links_url_index"]}
+             ]
+
+      refute changeset.valid?
     end
 
     test "create_link/2 with invalid data returns error changeset" do

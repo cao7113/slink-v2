@@ -25,7 +25,12 @@ tasks:
   fmt: mix format
 
   ## DB ops
-  pg: pgcli slink_v2_dev
+  db:
+    aliases: [sql, pg]
+    cmds:
+      - |
+        pgcli slink_v2_dev
+  db.mig: mix ecto.migrate
   db.reset: |
     mix ecto.reset.force
     MIX_ENV=test mix ecto.reset.force
