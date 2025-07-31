@@ -5,6 +5,7 @@ defmodule SlinkWeb.Api.LinkController do
   alias Slink.Links.Link
 
   action_fallback SlinkWeb.FallbackController
+  require Logger
 
   def index(conn, _params) do
     links = Links.list_links(conn.assigns.current_scope)
@@ -12,7 +13,11 @@ defmodule SlinkWeb.Api.LinkController do
   end
 
   def create(conn, %{"link" => link_params}) do
+    Logger.info("Creating link with params: #{link_params |> inspect}!")
+
     with {:ok, %Link{} = link} <- Links.create_link(conn.assigns.current_scope, link_params) do
+      Logger.info("Created link with ID: #{link.id} with params: #{link_params |> inspect}!")
+
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/links/#{link}")
@@ -29,6 +34,7 @@ defmodule SlinkWeb.Api.LinkController do
     link = Links.get_link!(conn.assigns.current_scope, id)
 
     with {:ok, %Link{} = link} <- Links.update_link(conn.assigns.current_scope, link, link_params) do
+      Logger.info("Updated link with ID: #{link.id} with params: #{link_params |> inspect}!")
       render(conn, :show, link: link)
     end
   end
@@ -37,6 +43,10 @@ defmodule SlinkWeb.Api.LinkController do
     link = Links.get_link!(conn.assigns.current_scope, id)
 
     with {:ok, %Link{}} <- Links.delete_link(conn.assigns.current_scope, link) do
+      Logger.info(
+        "Deleted link with ID: #{link.id} with attrs: #{link |> Map.take([:title, :url, :user_id, :inserted_at, :updated_at])}!"
+      )
+
       send_resp(conn, :no_content, "")
     end
   end

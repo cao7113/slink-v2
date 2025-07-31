@@ -9,6 +9,8 @@ defmodule Slink.Links do
   alias Slink.Links.Link
   alias Slink.Accounts.Scope
 
+  @list_limit 20
+
   @doc """
   Subscribes to scoped notifications about any link changes.
 
@@ -49,12 +51,51 @@ defmodule Slink.Links do
     Repo.all_by(Link, user_id: scope.user.id)
   end
 
-  @list_limit 100
   def list_links(_) do
     Link
     |> order_by(desc: :updated_at)
     |> limit(@list_limit)
     |> Repo.all()
+  end
+
+  @doc """
+  Search links by url or title
+  """
+  def search_links(query, opts \\ [])
+  def search_links(nil, opts), do: search_links("", opts)
+
+  def search_links(query, opts) when is_binary(query) do
+    query
+    |> String.trim()
+    |> do_search_links(opts)
+    |> Enum.with_index(fn link, idx ->
+      %{link | list_index: idx + 1}
+    end)
+  end
+
+  def search_links_count(nil), do: search_links_count("")
+
+  def search_links_count(query) when is_binary(query) do
+    search_query(query)
+    |> Repo.aggregate(:count, :id)
+  end
+
+  def do_search_links(query, opts \\ []) when is_binary(query) do
+    offset = Keyword.get(opts, :offset, 0)
+
+    search_query(query)
+    |> order_by([l], desc: l.updated_at, desc: l.id)
+    |> offset(^offset)
+    |> limit(@list_limit)
+    |> Repo.all()
+  end
+
+  def search_query("") do
+    from(l in Link)
+  end
+
+  def search_query(query) when is_binary(query) do
+    from(l in Link, where: ilike(l.title, ^"%#{query}%") or ilike(l.url, ^"%#{query}%"))
   end
 
   @doc """

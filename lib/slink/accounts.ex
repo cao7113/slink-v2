@@ -23,10 +23,21 @@ defmodule Slink.Accounts do
   end
 
   @doc """
+  Creates a new api token for a user with a pre-known secret.
+  """
+  def create_user_api_token_with_secret(user, secret \\ UserToken.gen_secret_token!()) do
+    {encoded_token, user_token} =
+      UserToken.build_email_token_with_secret!(user, "api-token", secret)
+
+    Repo.insert!(user_token)
+    encoded_token
+  end
+
+  @doc """
   Fetches the user by API token.
   """
-  def fetch_user_by_api_token(token) do
-    with {:ok, query} <- UserToken.verify_api_token_query(token),
+  def fetch_user_by_api_token(encoded_token) do
+    with {:ok, query} <- UserToken.verify_api_token_query(encoded_token),
          %User{} = user <- Repo.one(query) do
       {:ok, user}
     else

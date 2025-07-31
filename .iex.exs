@@ -8,6 +8,7 @@ alias Slink.Accounts.User, as: U
 alias Slink.Accounts.UserToken, as: Ut
 alias Slink.Accounts.Scope
 alias Slink.Accounts.Scope, as: Sc
+u1 = User.find(1)
 
 ## Links
 alias Slink.Links
@@ -21,3 +22,6 @@ alias SlinkWeb, as: Web
 
 ## Remote
 alias Remote, as: R
+
+## Testing
+alias TestHelpers, as: Th

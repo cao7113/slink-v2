@@ -28,6 +28,7 @@ defmodule Slink.MixProject do
 
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:dev), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -43,7 +44,7 @@ defmodule Slink.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.1.0-rc.0"},
+      {:phoenix_live_view, "~> 1.1.0"},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
@@ -55,7 +56,7 @@ defmodule Slink.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:swoosh, "~> 1.16"},
+      {:swoosh, "~> 1.19"},
       {:req, "~> 0.5"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
@@ -66,7 +67,7 @@ defmodule Slink.MixProject do
       {:endon, "~> 2.0"},
 
       # Dev Tools
-      {:igniter, "~> 0.5", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]}
     ]
   end
 

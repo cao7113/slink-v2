@@ -42,7 +42,10 @@ tasks:
   open: fly apps open
   vm: fly machine ls
   ls: fly app ls
-  db: fly postgres connect -a {{.FLY_DB_APP_NAME}}
+  db:
+    aliases: [pg]
+    cmds:
+      - fly postgres connect -a {{.FLY_DB_APP_NAME}}
   db-users: fly postgres users list --app {{.FLY_DB_APP_NAME}}
   # plain env and secrets
   env: fly config env

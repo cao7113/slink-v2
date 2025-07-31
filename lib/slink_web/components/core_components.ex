@@ -339,11 +339,15 @@ defmodule SlinkWeb.CoreComponents do
         <tr>
           <th :for={col <- @col}>{col[:label]}</th>
           <th :if={@action != []}>
-            <span class="sr-only">{gettext("Actions")}</span>
+            <%!-- class="sr-only" --%>
+            <span>{gettext("Actions")}</span>
           </th>
         </tr>
       </thead>
       <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
+        <tr id={"#{@id}-empty"} class="only:table-row hidden">
+          <td colspan={Enum.count(@col) + 1} class="text-center">No data found</td>
+        </tr>
         <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
           <td
             :for={col <- @col}

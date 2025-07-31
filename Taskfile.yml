@@ -4,6 +4,7 @@ vars:
   LOCAL_MAGIC_COOKIE: slink
   DOCKER_IMG_NAME: slinkv2
   DOCKER_CONTAINER_NAME: slinkv2
+  DEV_API_HOST: http://localhost:4000
 includes:
   # task f:iex
   flyio:
@@ -24,6 +25,14 @@ tasks:
       - iex --name slink2 --cookie slink2 -S mix phx.server
   fmt: mix format
 
+  # Links
+  link.create: |
+    curl -X POST \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer ${DEV_API_TOKEN}" \
+      -d '{"link": {"title": "Example", "url": "https://example1.com"}}' \
+      {{.DEV_API_HOST}}/api/links
+
   ## DB ops
   db:
     aliases: [sql, pg]
@@ -31,10 +40,15 @@ tasks:
       - |
         pgcli slink_v2_dev
   db.mig: mix ecto.migrate
+  db.reset.test:
+    env:
+      MIX_ENV: test
+    cmds:
+      - mix ecto.reset.force
   db.reset: |
     mix ecto.reset.force
-    MIX_ENV=test mix ecto.reset.force
-    run/dev.exs
+    mix dev.init
+    task db.reset.test
     echo reset dev and test db
 
   ## Git ops

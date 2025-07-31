@@ -7,6 +7,7 @@ defmodule Slink.Links.Link do
     field :title, :string
     field :url, :string
     field :user_id, :id
+    field :list_index, :integer, virtual: true
 
     timestamps(type: :utc_datetime)
   end
@@ -17,7 +18,8 @@ defmodule Slink.Links.Link do
     |> cast(attrs, [:title, :url])
     |> validate_required([:title, :url])
     |> put_change(:user_id, user_scope.user.id)
-    # unique_constraint(:url, name: :links_url_index)
-    |> unique_constraint(:url)
+    # |> unique_constraint(:url)
+    # above sometimes raise error???
+    |> unique_constraint(:url, name: "links_url_index")
   end
 end
