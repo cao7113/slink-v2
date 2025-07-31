@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.2.1 (2025-07-31)
+
+
+
+
+### Bug Fixes:
+
+* add public links search by Ryn Cao
+
 ## v0.2.0 (2025-07-25)
 
 
