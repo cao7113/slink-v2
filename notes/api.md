@@ -1,5 +1,22 @@
 # API
 
+## API Prefix
+
+- https://hexdocs.pm/phoenix/1.8.0-rc.4/Mix.Tasks.Phx.Gen.Json.html#module-api-prefix
+
+```
+config :slink,
+  generators: [
+    # this is default api route prefix
+    # api_prefix: "/api",
+    api_prefix: ""
+  ]
+
+# Prefer api controller like below:
+mix phx.gen.json Links Link links title url --web api # --no-context
+# Auto place controllers into lib/*_web/controllers/api/*_controller.ex
+```
+
 ## Links API
 
 https://hexdocs.pm/phoenix/1.8.0-rc.4/Mix.Tasks.Phx.Gen.Json.html

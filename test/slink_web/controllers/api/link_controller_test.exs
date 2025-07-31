@@ -56,6 +56,14 @@ defmodule SlinkWeb.Api.LinkControllerTest do
       conn = post(conn, ~p"/api/links", link: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
+
+    test "reject unauthorized create link", %{unauthed_conn: conn} do
+      conn = post(conn, ~p"/api/links", link: @create_attrs)
+
+      %{
+        "message" => "Unauthorized user to continue!"
+      } = json_response(conn, 401)
+    end
   end
 
   describe "Get link with unauthenticated connection" do

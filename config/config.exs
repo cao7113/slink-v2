@@ -25,7 +25,11 @@ config :slink, :scopes,
 
 config :slink,
   ecto_repos: [Slink.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [
+    timestamp_type: :utc_datetime,
+    # api_prefix: "/api",
+    api_prefix: ""
+  ]
 
 # Configures the endpoint
 config :slink, SlinkWeb.Endpoint,
