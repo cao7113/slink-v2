@@ -1,0 +1,82 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <.form for={@search_form} phx-change="search">
+    <.input
+      type="search"
+      field={@search_form[:query]}
+      placeholder="Search title or url..."
+      phx-debounce="350"
+      class="w-full input"
+      autofocus
+    />
+  </.form>
+
+  <.header>
+    Links({@links_count})
+    <:actions>
+      <.button :if={@current_scope} variant="primary" navigate={~p"/links/new"}>
+        <.icon name="hero-plus" /> New Link
+      </.button>
+    </:actions>
+  </.header>
+
+  <ul
+    id="links"
+    phx-update="stream"
+    phx-viewport-top={@page > 1 && JS.push("prev-page", page_loading: true)}
+    phx-viewport-bottom={!@end_of_timeline? && JS.push("next-page", page_loading: true)}
+    class={[
+      if(@end_of_timeline?, do: "pb-3", else: "pb-[calc(200vh)]"),
+      if(@page == 1, do: "pt-2", else: "pt-[calc(200vh)]")
+    ]}
+  >
+    <li :for={{id, link} <- @streams.links} id={id}>
+      <div class="card bg-base-100 shadow-md p-2 rounded-box">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="card-title font-semibold text-xl flex items-center">
+            <span class="badge badge-outline mr-2">{link.list_index}</span>
+
+            <.link navigate={~p"/links/#{link}"}>{link.title}</.link>
+          </h3>
+        </div>
+        <div class="flex items-center mb-3">
+          <span class="i-carbon-link mr-2"></span>
+          <.link
+            href={link.url}
+            target="_blank"
+            class="link link-hover text-blue-600 truncate max-w-[80%]"
+          >
+            {link.url}
+          </.link>
+        </div>
+        <div class="text-sm text-gray-500">
+          <span class="text-sm text-gray-500">ID: {link.id}</span>
+          <span class="i-carbon-calendar mr-1"></span>
+          Updated at: {link.updated_at}
+          <span class="mx-2">•</span>
+          <span class="i-carbon-user mr-1"></span>
+          User: {link.user_id}
+
+          <.link
+            :if={@current_scope && @current_scope.user.id == link.user_id}
+            navigate={~p"/links/#{link}/edit"}
+            class="btn"
+          >
+            Edit
+          </.link>
+
+          <.link
+            :if={@current_scope && @current_scope.user.id == link.user_id}
+            phx-click={JS.push("delete", value: %{id: link.id}) |> hide("##{id}")}
+            data-confirm="Are you sure?"
+            class="btn text-red-600"
+          >
+            Delete
+          </.link>
+        </div>
+      </div>
+    </li>
+  </ul>
+  <div :if={@end_of_timeline?} class="mt-1 text-[20px] text-center">
+    🎉 Reached the end 🎉
+  </div>
+</Layouts.app>

@@ -9,7 +9,7 @@ defmodule Slink.Links do
   alias Slink.Links.Link
   alias Slink.Accounts.Scope
 
-  @list_limit 20
+  @default_per_page 20
 
   @doc """
   Subscribes to scoped notifications about any link changes.
@@ -54,8 +54,15 @@ defmodule Slink.Links do
   def list_links(_) do
     Link
     |> order_by(desc: :updated_at)
-    |> limit(@list_limit)
+    |> limit(@default_per_page)
     |> Repo.all()
+  end
+
+  def search_links_count(nil), do: search_links_count("")
+
+  def search_links_count(query) when is_binary(query) do
+    build_search_query(query)
+    |> Repo.aggregate(:count, :id)
   end
 
   @doc """
@@ -73,28 +80,23 @@ defmodule Slink.Links do
     end)
   end
 
-  def search_links_count(nil), do: search_links_count("")
-
-  def search_links_count(query) when is_binary(query) do
-    search_query(query)
-    |> Repo.aggregate(:count, :id)
-  end
-
   def do_search_links(query, opts \\ []) when is_binary(query) do
-    offset = Keyword.get(opts, :offset, 0)
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, @default_per_page)
+    offset = (page - 1) * per_page
 
-    search_query(query)
+    build_search_query(query)
     |> order_by([l], desc: l.updated_at, desc: l.id)
     |> offset(^offset)
-    |> limit(@list_limit)
+    |> limit(^per_page)
     |> Repo.all()
   end
 
-  def search_query("") do
+  def build_search_query("") do
     from(l in Link)
   end
 
-  def search_query(query) when is_binary(query) do
+  def build_search_query(query) when is_binary(query) do
     from(l in Link, where: ilike(l.title, ^"%#{query}%") or ilike(l.url, ^"%#{query}%"))
   end
 
