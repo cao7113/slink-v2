@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.2.2 (2025-08-01)
+
+
+
+
+### Bug Fixes:
+
+* add scroll infinite pagination to public links by Ryn Cao
+
 ## v0.2.1 (2025-07-31)
 
 
