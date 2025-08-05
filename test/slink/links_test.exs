@@ -37,7 +37,7 @@ defmodule Slink.LinksTest do
       assert link.url == "some url"
       assert link.user_id == scope.user.id
 
-      # recreate with same url
+      # re-create with same url
       {:error, %Ecto.Changeset{} = changeset} = Links.create_link(scope, valid_attrs)
 
       assert changeset.errors == [
@@ -99,6 +99,46 @@ defmodule Slink.LinksTest do
       scope = user_scope_fixture()
       link = link_fixture(scope)
       assert %Ecto.Changeset{} = Links.change_link(scope, link)
+    end
+  end
+
+  describe "create attrs" do
+    @describetag :try
+
+    alias Slink.Links.Link
+    import Slink.AccountsFixtures, only: [user_scope_fixture: 0]
+    import Slink.LinksFixtures
+
+    test "manual inserted_at" do
+      scope = user_scope_fixture()
+      link = link_fixture(scope)
+      attrs = link |> Link.get_create_attrs()
+
+      manual_inserted_at =
+        DateTime.utc_now() |> DateTime.add(-48, :hour) |> DateTime.truncate(:second)
+
+      attrs2 = %{
+        attrs
+        | url: "updated #{link.url}",
+          inserted_at: manual_inserted_at
+      }
+
+      cs = Link.new_changeset(attrs2)
+      link2 = Slink.Repo.insert!(cs)
+      assert link2.inserted_at == manual_inserted_at
+    end
+  end
+
+  describe "flop pagination" do
+    @describetag :try
+
+    alias Slink.Links.Link
+    import Slink.AccountsFixtures, only: [user_scope_fixture: 0]
+    import Slink.LinksFixtures
+
+    # https://hexdocs.pm/flop/Flop.html#module-pagination
+    test "cursor based" do
+      Links.batch_run_with_cursor(handler: &Enum.count/1)
     end
   end
 end

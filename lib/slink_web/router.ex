@@ -21,7 +21,7 @@ defmodule SlinkWeb.Router do
   scope "/", SlinkWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    get "/home", PageController, :home
   end
 
   # API
@@ -94,6 +94,7 @@ defmodule SlinkWeb.Router do
       live "/users/log-in/:token", UserLive.Confirmation, :new
 
       # public links show
+      live "/", LinkLive.Index, :index
       live "/links", LinkLive.Index, :index
       live "/links/new", LinkLive.Form, :new
       live "/links/:id", LinkLive.Show, :show

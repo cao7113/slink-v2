@@ -4,7 +4,7 @@
       type="search"
       field={@search_form[:query]}
       placeholder="Search title or url..."
-      phx-debounce="350"
+      phx-debounce="300"
       class="w-full input"
       autofocus
     />
@@ -33,19 +33,16 @@
       <div class="card bg-base-100 shadow-md p-2 rounded-box">
         <div class="flex justify-between items-start mb-2">
           <h3 class="card-title font-semibold text-xl flex items-center">
-            <span class="badge badge-outline mr-2">{link.list_index}</span>
-
             <.link navigate={~p"/links/#{link}"}>{link.title}</.link>
           </h3>
         </div>
         <div class="flex items-center mb-3">
-          <span class="i-carbon-link mr-2"></span>
           <.link
             href={link.url}
             target="_blank"
             class="link link-hover text-blue-600 truncate max-w-[80%]"
           >
-            {link.url}
+            <span class="badge">#{link.list_index}</span> {link.url}
           </.link>
         </div>
         <div class="text-sm text-gray-500">

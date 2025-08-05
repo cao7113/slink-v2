@@ -66,6 +66,9 @@ defmodule Slink.MixProject do
       {:bandit, "~> 1.5"},
       {:endon, "~> 2.0"},
 
+      # App enhancement
+      {:flop, "~> 0.26.3"},
+
       # Dev Tools
       {:igniter, "~> 0.6", only: [:dev, :test]}
     ]

@@ -9,65 +9,6 @@ defmodule SlinkWeb.LinkLive.Index do
 
   @per_page 20
 
-  # @impl true
-  # def render(assigns) do
-  #   ~H"""
-  #   <Layouts.app flash={@flash} current_scope={@current_scope}>
-  #     <.form for={@search_form} phx-change="search">
-  #       <.input
-  #         type="search"
-  #         field={@search_form[:query]}
-  #         placeholder="Search title or url..."
-  #         phx-debounce="350"
-  #         class="w-full input"
-  #         autofocus
-  #       />
-  #     </.form>
-
-  #     <.header>
-  #       Links({@links_count})
-  #       <:actions>
-  #         <.button :if={@current_scope} variant="primary" navigate={~p"/links/new"}>
-  #           <.icon name="hero-plus" /> New Link
-  #         </.button>
-  #       </:actions>
-  #     </.header>
-
-  #     <.table
-  #       id="links"
-  #       rows={@streams.links}
-  #       row_click={fn {_id, link} -> JS.navigate(~p"/links/#{link}") end}
-  #     >
-  #       <:col :let={{_id, link}} label="#">{link.list_index}</:col>
-  #       <:col :let={{_id, link}} label="ID">{link.id}</:col>
-  #       <:col :let={{_id, link}} label="Title">{link.title}</:col>
-  #       <:col :let={{_id, link}} label="Url">
-  #         <.link href={link.url} target="_blank">{link.url}</.link>
-  #       </:col>
-  #       <:col :let={{_id, link}} label="Updated At">{link.updated_at}</:col>
-  #       <:col :let={{_id, link}} label="User">{link.user_id}</:col>
-  # <:action :let={{_id, link}} :if={@current_scope}>
-  #   <div class="sr-only">
-  #     <.link navigate={~p"/links/#{link}"}>Show</.link>
-  #   </div>
-  #   <.link :if={@current_scope.user.id == link.user_id} navigate={~p"/links/#{link}/edit"}>
-  #     Edit
-  #   </.link>
-  # </:action>
-  # <:action :let={{id, link}} :if={@current_scope}>
-  #   <.link
-  #     :if={@current_scope.user.id == link.user_id}
-  #     phx-click={JS.push("delete", value: %{id: link.id}) |> hide("##{id}")}
-  #     data-confirm="Are you sure?"
-  #   >
-  #     Delete
-  #   </.link>
-  # </:action>
-  #     </.table>
-  #   </Layouts.app>
-  #   """
-  # end
-
   @impl true
   def mount(params, _session, socket) do
     if connected?(socket) do
@@ -170,4 +111,63 @@ defmodule SlinkWeb.LinkLive.Index do
   def get_page(nil), do: 1
   def get_page(page) when is_integer(page) and page >= 1, do: page
   def get_page(page) when is_binary(page), do: page |> String.to_integer() |> get_page()
+
+  # @impl true
+  # def render(assigns) do
+  #   ~H"""
+  #   <Layouts.app flash={@flash} current_scope={@current_scope}>
+  #     <.form for={@search_form} phx-change="search">
+  #       <.input
+  #         type="search"
+  #         field={@search_form[:query]}
+  #         placeholder="Search title or url..."
+  #         phx-debounce="350"
+  #         class="w-full input"
+  #         autofocus
+  #       />
+  #     </.form>
+
+  #     <.header>
+  #       Links({@links_count})
+  #       <:actions>
+  #         <.button :if={@current_scope} variant="primary" navigate={~p"/links/new"}>
+  #           <.icon name="hero-plus" /> New Link
+  #         </.button>
+  #       </:actions>
+  #     </.header>
+
+  #     <.table
+  #       id="links"
+  #       rows={@streams.links}
+  #       row_click={fn {_id, link} -> JS.navigate(~p"/links/#{link}") end}
+  #     >
+  #       <:col :let={{_id, link}} label="#">{link.list_index}</:col>
+  #       <:col :let={{_id, link}} label="ID">{link.id}</:col>
+  #       <:col :let={{_id, link}} label="Title">{link.title}</:col>
+  #       <:col :let={{_id, link}} label="Url">
+  #         <.link href={link.url} target="_blank">{link.url}</.link>
+  #       </:col>
+  #       <:col :let={{_id, link}} label="Updated At">{link.updated_at}</:col>
+  #       <:col :let={{_id, link}} label="User">{link.user_id}</:col>
+  #       <:action :let={{_id, link}} :if={@current_scope}>
+  #         <div class="sr-only">
+  #           <.link navigate={~p"/links/#{link}"}>Show</.link>
+  #         </div>
+  #         <.link :if={@current_scope.user.id == link.user_id} navigate={~p"/links/#{link}/edit"}>
+  #           Edit
+  #         </.link>
+  #       </:action>
+  #       <:action :let={{id, link}} :if={@current_scope}>
+  #         <.link
+  #           :if={@current_scope.user.id == link.user_id}
+  #           phx-click={JS.push("delete", value: %{id: link.id}) |> hide("##{id}")}
+  #           data-confirm="Are you sure?"
+  #         >
+  #           Delete
+  #         </.link>
+  #       </:action>
+  #     </.table>
+  #   </Layouts.app>
+  #   """
+  # end
 end

@@ -9,7 +9,10 @@ defmodule Slink.Links do
   alias Slink.Links.Link
   alias Slink.Accounts.Scope
 
+  require Logger
+
   @default_per_page 20
+  @default_batch_size 200
 
   @doc """
   Subscribes to scoped notifications about any link changes.
@@ -57,6 +60,104 @@ defmodule Slink.Links do
     |> limit(@default_per_page)
     |> Repo.all()
   end
+
+  ## Flop helpers
+
+  @doc """
+  Cursor-based run handler in batch https://hexdocs.pm/flop/Flop.html#module-pagination
+  Prefer this when in large datasets using forward (first/after)
+
+  Options:
+  - first: 200
+  - after: nil
+  - handler: fn _ -> nil end
+  - node: nil, remote node
+  """
+  def batch_run_with_cursor(opts \\ []) do
+    flop = %Flop{
+      first: Keyword.get(opts, :first, @default_batch_size),
+      after: Keyword.get(opts, :after, nil),
+      order_by: [:id],
+      order_directions: [:asc]
+    }
+
+    handler =
+      Keyword.get(opts, :handler, fn items ->
+        Enum.map(items, & &1.id) |> Enum.join(",") |> IO.puts()
+      end)
+
+    node = Keyword.get(opts, :node, nil)
+
+    do_flop_run(node, Link, flop, for: Link)
+    |> do_batch_run_with_cursor(handler, flop, node)
+  end
+
+  defp do_batch_run_with_cursor(run_resp, handler, flop, node)
+
+  defp do_batch_run_with_cursor({result, %{has_next_page?: false} = _meta}, handler, _flop, _node) do
+    handler.(result)
+  end
+
+  defp do_batch_run_with_cursor(
+         {result, %{end_cursor: end_cursor, has_next_page?: true} = _meta},
+         handler,
+         flop,
+         node
+       ) do
+    handler.(result)
+    next_flop = flop |> Map.put(:after, end_cursor)
+    next_resp = do_flop_run(node, Link, next_flop, for: Link)
+    do_batch_run_with_cursor(next_resp, handler, next_flop, node)
+  end
+
+  defp do_flop_run(nil, query, flop, opts) do
+    Flop.run(query, flop, opts)
+  end
+
+  # support remote call
+  defp do_flop_run(node, query, flop, opts) do
+    :erpc.call(node, Flop, :run, [query, flop, opts], 10000)
+  end
+
+  @doc """
+  Page-based run handler in batch https://hexdocs.pm/flop/Flop.html#module-pagination
+  NOTE: always triger total-count query in each batch
+  """
+  def batch_run_with_paged(opts \\ []) do
+    flop = %Flop{
+      page: Keyword.get(opts, :page, 1),
+      page_size: Keyword.get(opts, :page_size, @default_batch_size),
+      order_by: [:id],
+      order_directions: [:asc]
+    }
+
+    handler =
+      Keyword.get(opts, :handler, fn items ->
+        Enum.map(items, & &1.id) |> Enum.join(",") |> IO.puts()
+      end)
+
+    Flop.run(Link, flop, for: Link)
+    |> do_batch_run_with_paged(handler, flop)
+  end
+
+  defp do_batch_run_with_paged(run_resp, handler, flop)
+
+  defp do_batch_run_with_paged({result, %{has_next_page?: false} = _meta}, handler, _flop) do
+    handler.(result)
+  end
+
+  defp do_batch_run_with_paged(
+         {result, %{next_page: next_page, has_next_page?: true} = _meta},
+         handler,
+         flop
+       ) do
+    handler.(result)
+    next_flop = %{flop | page: next_page}
+    next_resp = Flop.run(Link, next_flop, for: Link)
+    do_batch_run_with_paged(next_resp, handler, next_flop)
+  end
+
+  ## Naive impl. search, deprecated sinc 2025.8+
 
   def search_links_count(nil), do: search_links_count("")
 

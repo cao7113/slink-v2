@@ -5,6 +5,10 @@ defmodule Remote do
   Node info https://hexdocs.pm/elixir/1.18.4/Node.html#spawn/2
   erpc https://www.erlang.org/doc/apps/kernel/erpc.html
   """
+
+  alias Slink.Links
+  alias Slink.Links.Link
+
   require Logger
 
   @doc """
@@ -52,31 +56,50 @@ defmodule Remote do
   ## Links
 
   def fetch_remote_links(node \\ first_remote_node()) do
-    :erpc.call(node, Slink.Links.Link, :all, [])
+    :erpc.call(node, Slink.Links.Link, :all, [[order_by: [asc: :id]]])
+  end
+
+  def save_remote_links_as!(
+        file \\ "./_local/remote-data/links-#{DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_string() |> String.replace(" ", "T")}.json",
+        node \\ first_remote_node()
+      ) do
+    links =
+      fetch_remote_links(node)
+      |> Enum.map(fn link ->
+        link |> Map.from_struct() |> Map.delete(:__meta__)
+      end)
+
+    file = Path.expand(file)
+    dir = Path.dirname(file)
+    File.mkdir_p!(dir)
+    File.write!(file, Jason.encode!(links, pretty: true))
+    IO.puts("Saved remote links to #{file}")
   end
 
   def download_remote_links!(node \\ first_remote_node()) do
-    node
-    |> fetch_remote_links()
-    |> Enum.with_index(fn link, idx ->
-      Logger.info("downloading [#{idx}] id=#{link.id} #{link.url}")
+    handler = fn items ->
+      items
+      |> Enum.with_index(fn link, idx ->
+        Logger.info("downloading [#{idx}] id=#{link.id} #{link.url}")
+        attrs = Link.get_create_attrs(link)
 
-      Slink.Links.Link.find_by(url: link.url)
-      |> case do
-        nil ->
-          # require user_id match
-          new_link = Slink.Links.Link.create!(link)
+        with cs <- Link.new_changeset(attrs),
+             {:ok, new_link} <- Slink.Repo.insert(cs) do
           Logger.info("created local link #{new_link.id}")
+        else
+          {:error, %Ecto.Changeset{errors: errors}} ->
+            Logger.warning("failed to create local link: #{inspect(errors)}")
 
-        found ->
-          Logger.info("already existed local link: #{found.id} with url: #{link.url}")
-      end
-    end)
+          err ->
+            Logger.error("failed to create local link: #{inspect(err)}")
+        end
+      end)
+    end
+
+    Links.batch_run_with_cursor(node: node, handler: handler)
   end
 
   def upload_remote_links!(node, links) when is_list(links) do
-    ignore_struct_fields = [:__meta__, :user]
-
     links
     |> Enum.with_index(fn link, idx ->
       Logger.info("uploading [#{idx}] id=#{link.id} #{link.url}")
@@ -84,14 +107,7 @@ defmodule Remote do
       :erpc.call(node, Slink.Links.Link, :find_by, [[url: link.url]])
       |> case do
         nil ->
-          attrs =
-            link
-            |> Map.from_struct()
-            |> Enum.reject(fn {k, _v} ->
-              ignore_struct_fields |> Enum.member?(k)
-            end)
-
-          # require user_id match
+          attrs = Link.get_create_attrs(link)
           new_link = :erpc.call(node, Slink.Links.Link, :create!, [attrs])
           Logger.info("created remote link #{new_link.id}")
 

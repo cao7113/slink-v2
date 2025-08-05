@@ -1,3 +1,4 @@
+alias Slink, as: S
 alias Slink.Repo
 
 # Accounts & User

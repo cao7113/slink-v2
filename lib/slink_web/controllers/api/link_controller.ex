@@ -22,6 +22,10 @@ defmodule SlinkWeb.Api.LinkController do
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/links/#{link}")
       |> render(:show, link: link)
+    else
+      err ->
+        Logger.info("create link failed: #{err |> inspect}")
+        err
     end
   end
 

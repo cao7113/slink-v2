@@ -10,6 +10,8 @@ import Config
 config :endon,
   repo: Slink.Repo
 
+config :flop, repo: Slink.Repo
+
 config :slink, :scopes,
   user: [
     default: true,
