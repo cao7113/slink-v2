@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.2.3 (2025-08-05)
+
+
+
+
+### Bug Fixes:
+
+* refactor root page with list layout and remote ops with cursor-based pagination through flop by Ryn Cao
+
 ## v0.2.2 (2025-08-01)
 
 
