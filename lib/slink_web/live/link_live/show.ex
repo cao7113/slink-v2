@@ -27,7 +27,11 @@ defmodule SlinkWeb.LinkLive.Show do
       <.list>
         <:item title="ID">{@link.id}</:item>
         <:item title="Title">{@link.title}</:item>
-        <:item title="Url">{@link.url}</:item>
+        <:item title="Url">
+          <.link href={@link.url} class="link link-hover text-blue-600 truncate max-w-[80%]">
+            {@link.url}
+          </.link>
+        </:item>
         <:item title="User">{@link.user_id}</:item>
         <:item title="Inserted At">{@link.inserted_at}</:item>
         <:item title="Updated At">{@link.updated_at}</:item>
