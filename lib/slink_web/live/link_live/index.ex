@@ -98,7 +98,9 @@ defmodule SlinkWeb.LinkLive.Index do
 
     case items do
       [] ->
-        assign(socket, end_of_timeline?: at == -1)
+        socket
+        |> assign(end_of_timeline?: at == -1)
+        |> stream(:links, [])
 
       [_ | _] = items ->
         socket

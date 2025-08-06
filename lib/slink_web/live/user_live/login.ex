@@ -120,6 +120,8 @@ defmodule SlinkWeb.UserLive.Login do
      |> push_navigate(to: ~p"/users/log-in")}
   end
 
+  def login_magic_link(token), do: url(~p"/users/log-in/#{token}")
+
   defp local_mail_adapter? do
     Application.get_env(:slink, Slink.Mailer)[:adapter] == Swoosh.Adapters.Local
   end

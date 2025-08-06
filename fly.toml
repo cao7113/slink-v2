@@ -16,6 +16,7 @@ release_command = '/app/bin/migrate'
 PHX_HOST = 'slink-v2.fly.dev'
 PORT = '8080'
 ECTO_IPV6 = 'true'
+MAILER_SMTP_GMAIL_ENABLED = "true"
 
 ## distribution
 ERL_AFLAGS = '-proto_dist inet6_tcp'

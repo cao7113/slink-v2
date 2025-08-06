@@ -4,6 +4,19 @@ defmodule Slink.Accounts.UserNotifier do
   alias Slink.Mailer
   alias Slink.Accounts.User
 
+  @doc """
+  Test email delivery
+  """
+  def test_smtp(to, from \\ Mailer.gmail_username()) do
+    new()
+    |> to(to)
+    |> from(from)
+    |> subject("Test mail-#{DateTime.utc_now()}")
+    |> html_body("<h1>Test html body</h1>")
+    # |> text_body("Test text body!")
+    |> Mailer.deliver()
+  end
+
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do
     email =

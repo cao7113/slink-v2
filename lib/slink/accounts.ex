@@ -305,9 +305,20 @@ defmodule Slink.Accounts do
   """
   def deliver_login_instructions(%User{} = user, magic_link_url_fun)
       when is_function(magic_link_url_fun, 1) do
+    login_url = get_login_magic_link_url(user, magic_link_url_fun)
+    UserNotifier.deliver_login_instructions(user, login_url)
+  end
+
+  def get_login_magic_link_url(%User{} = user, magic_link_url_fun)
+      when is_function(magic_link_url_fun, 1) do
+    encoded_token = get_login_magic_link_token(user)
+    magic_link_url_fun.(encoded_token)
+  end
+
+  def get_login_magic_link_token(%User{} = user) do
     {encoded_token, user_token} = UserToken.build_email_token(user, "login")
     Repo.insert!(user_token)
-    UserNotifier.deliver_login_instructions(user, magic_link_url_fun.(encoded_token))
+    encoded_token
   end
 
   @doc """

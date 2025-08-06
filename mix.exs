@@ -68,6 +68,8 @@ defmodule Slink.MixProject do
 
       # App enhancement
       {:flop, "~> 0.26.3"},
+      # smtp support for gmail
+      {:gen_smtp, "~> 1.3"},
 
       # Dev Tools
       {:igniter, "~> 0.6", only: [:dev, :test]}

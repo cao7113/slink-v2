@@ -117,3 +117,8 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
+
+if EnvHelper.enabled?("MAILER_SMTP_GMAIL_ENABLED") do
+  IO.puts("===Setting mailer-type to :smtp_gmail")
+  config :slink, Slink.Mailer, Slink.Mailer.smtp_gmail_opts()
+end

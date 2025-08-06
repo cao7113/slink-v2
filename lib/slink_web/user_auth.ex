@@ -41,6 +41,13 @@ defmodule SlinkWeb.UserAuth do
   end
 
   @doc """
+  Manually get magic-link url to login, mainly used for dev testing
+  """
+  def get_login_magic_link_url(%Accounts.User{} = user) do
+    Accounts.get_login_magic_link_url(user, &SlinkWeb.UserLive.Login.login_magic_link/1)
+  end
+
+  @doc """
   Logs the user out.
 
   It clears all session data for safety. See renew_session.

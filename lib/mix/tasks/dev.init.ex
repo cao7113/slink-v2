@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Dev.Init do
 
   @requirements ["app.start"]
   def run(_) do
-    TestHelpers.get_user()
+    TestHelpers.init_data()
     Mix.shell().info("Init dev data")
   end
 end
