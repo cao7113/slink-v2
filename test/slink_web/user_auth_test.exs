@@ -210,35 +210,6 @@ defmodule SlinkWeb.UserAuthTest do
     end
   end
 
-  describe "Verify api-token" do
-    test "valid token", %{conn: conn, user: user} do
-      conn =
-        conn
-        |> put_user_api_token(user: user)
-        |> UserAuth.fetch_current_scope_for_api_user()
-
-      assert conn.assigns.current_scope.user.id == user.id
-    end
-
-    test "invalid bearer token", %{conn: conn} do
-      conn =
-        conn
-        |> put_user_api_token(api_token: "Bearer invalid-bearer-token")
-        |> UserAuth.fetch_current_scope_for_api_user()
-
-      assert conn.assigns.current_scope == nil
-    end
-
-    test "invalid token", %{conn: conn} do
-      conn =
-        conn
-        |> put_user_api_token(api_token: "invalid-token")
-        |> UserAuth.fetch_current_scope_for_api_user()
-
-      assert conn.assigns.current_scope == nil
-    end
-  end
-
   describe "on_mount :mount_current_scope" do
     setup %{conn: conn} do
       %{conn: UserAuth.fetch_current_scope_for_user(conn, [])}

@@ -3,6 +3,7 @@ defmodule SlinkWeb.UserLive.Login do
 
   alias Slink.Accounts
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -23,6 +24,39 @@ defmodule SlinkWeb.UserLive.Login do
             </:subtitle>
           </.header>
         </div>
+
+        <div :if={local_mail_adapter?()} class="alert alert-info">
+          <.icon name="hero-information-circle" class="size-6 shrink-0" />
+          <div>
+            <p>You are running the local mail adapter.</p>
+            <p>
+              To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
+            </p>
+          </div>
+        </div>
+
+        <.form
+          :let={f}
+          for={@form}
+          id="login_form_magic"
+          action={~p"/users/log-in"}
+          phx-submit="submit_magic"
+        >
+          <.input
+            readonly={!!@current_scope}
+            field={f[:email]}
+            type="email"
+            label="Email"
+            autocomplete="username"
+            required
+            phx-mounted={JS.focus()}
+          />
+          <.button class="btn btn-primary w-full">
+            Log in with email <span aria-hidden="true">→</span>
+          </.button>
+        </.form>
+
+        <div class="divider">or</div>
 
         <.form
           :let={f}
@@ -53,42 +87,12 @@ defmodule SlinkWeb.UserLive.Login do
             Log in only this time
           </.button>
         </.form>
-
-        <div class="divider">or</div>
-        <div :if={local_mail_adapter?()} class="alert alert-info">
-          <.icon name="hero-information-circle" class="size-6 shrink-0" />
-          <div>
-            <p>You are running the local mail adapter.</p>
-            <p>
-              To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
-            </p>
-          </div>
-        </div>
-        <.form
-          :let={f}
-          for={@form}
-          id="login_form_magic"
-          action={~p"/users/log-in"}
-          phx-submit="submit_magic"
-        >
-          <.input
-            readonly={!!@current_scope}
-            field={f[:email]}
-            type="email"
-            label="Email"
-            autocomplete="username"
-            required
-            phx-mounted={JS.focus()}
-          />
-          <.button class="btn btn-primary w-full">
-            Log in with email <span aria-hidden="true">→</span>
-          </.button>
-        </.form>
       </div>
     </Layouts.app>
     """
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     email =
       Phoenix.Flash.get(socket.assigns.flash, :email) ||
@@ -99,6 +103,7 @@ defmodule SlinkWeb.UserLive.Login do
     {:ok, assign(socket, form: form, trigger_submit: false)}
   end
 
+  @impl true
   def handle_event("submit_password", _params, socket) do
     {:noreply, assign(socket, :trigger_submit, true)}
   end
@@ -119,11 +124,6 @@ defmodule SlinkWeb.UserLive.Login do
      |> put_flash(:info, info)
      |> push_navigate(to: ~p"/users/log-in")}
   end
-
-  @doc """
-  Get login magic-link url for a token
-  """
-  def login_magic_link(token), do: url(~p"/users/log-in/#{token}")
 
   defp local_mail_adapter? do
     Application.get_env(:slink, Slink.Mailer)[:adapter] == Swoosh.Adapters.Local

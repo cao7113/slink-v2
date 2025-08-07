@@ -1,5 +1,4 @@
 defmodule Slink.Accounts.User do
-  use Endon
   use Ecto.Schema
   import Ecto.Changeset
 

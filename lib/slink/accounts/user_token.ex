@@ -1,5 +1,4 @@
 defmodule Slink.Accounts.UserToken do
-  use Endon
   use Ecto.Schema
   import Ecto.Query
   alias Slink.Accounts.UserToken
@@ -12,7 +11,6 @@ defmodule Slink.Accounts.UserToken do
   @magic_link_validity_in_minutes 15
   @change_email_validity_in_days 7
   @session_validity_in_days 14
-  @api_token_validity_in_days 365
 
   schema "users_tokens" do
     field :token, :binary
@@ -68,35 +66,6 @@ defmodule Slink.Accounts.UserToken do
   end
 
   @doc """
-  Checks if the API token is valid and returns its underlying lookup query.
-
-  The query returns the user found by the token, if any.
-
-  The given token is valid if it matches its hashed counterpart in the
-  database and the user email has not changed. This function also checks
-  if the token is being used within 365 days.
-  """
-  def verify_api_token_query(token) do
-    case Base.url_decode64(token, padding: false) do
-      {:ok, decoded_token} ->
-        hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
-
-        query =
-          from token in by_token_and_context_query(hashed_token, "api-token"),
-            join: user in assoc(token, :user),
-            where:
-              token.inserted_at > ago(^@api_token_validity_in_days, "day") and
-                token.sent_to == user.email,
-            select: user
-
-        {:ok, query}
-
-      :error ->
-        :error
-    end
-  end
-
-  @doc """
   Builds a token and its hash to be delivered to the user's email.
 
   The non-hashed token is sent to the user email while the
@@ -113,20 +82,8 @@ defmodule Slink.Accounts.UserToken do
     build_hashed_token(user, context, user.email)
   end
 
-  @doc """
-  Build token with pre-known secret string. Mainly used for testing and dev purposes.
-  """
-  def build_email_token_with_secret!(user, context, secret_bytes)
-      when is_binary(secret_bytes) and byte_size(secret_bytes) == @rand_size do
-    build_hashed_token(user, context, user.email, secret_bytes: secret_bytes)
-  end
-
-  defp build_hashed_token(user, context, sent_to, opts \\ []) do
-    token =
-      Keyword.get_lazy(opts, :secret_bytes, fn ->
-        gen_secret_token!(@rand_size)
-      end)
-
+  defp build_hashed_token(user, context, sent_to) do
+    token = :crypto.strong_rand_bytes(@rand_size)
     hashed_token = :crypto.hash(@hash_algorithm, token)
 
     {Base.url_encode64(token, padding: false),
@@ -136,40 +93,6 @@ defmodule Slink.Accounts.UserToken do
        sent_to: sent_to,
        user_id: user.id
      }}
-  end
-
-  def secret_rand_size, do: @rand_size
-
-  @doc """
-  Generate token secret bytes. like:
-
-  <<237, 68, 58, 153, 183, 212, 122, 212, 228, 2, 69, 148, 189, 164, 61, 250, 125,
-    161, 16, 198, 98, 238, 48, 135, 69, 146, 65, 9, 60, 128, 132, 67>>
-  """
-  def gen_secret_token!(size \\ @rand_size) do
-    :crypto.strong_rand_bytes(size)
-  end
-
-  @doc """
-  Encode secret bytes into human string
-
-    iex(53)> <<237, 68, 58, 153, 183, 212, 122, 212, 228, 2, 69, 148, 189, 164, 61, 250, 125, 161, 16, 198, 98, 238, 48, 135, 69, 146, 65, 9, 60, 128, 132, 67>>
-            |> Ut.encode_secret_token!
-    "7UQ6mbfUetTkAkWUvaQ9-n2hEMZi7jCHRZJBCTyAhEM"
-  """
-  def encode_secret_token!(secret_bytes \\ gen_secret_token!()) do
-    Base.url_encode64(secret_bytes, padding: false)
-  end
-
-  @doc """
-  Decode human string into secret bytes
-
-    iex(56)> "7UQ6mbfUetTkAkWUvaQ9-n2hEMZi7jCHRZJBCTyAhEM" |> Ut.decode_secret_token!
-    <<237, 68, 58, 153, 183, 212, 122, 212, 228, 2, 69, 148, 189, 164, 61, 250, 125,
-      161, 16, 198, 98, 238, 48, 135, 69, 146, 65, 9, 60, 128, 132, 67>>
-  """
-  def decode_secret_token!(encoded_token \\ encode_secret_token!()) do
-    Base.url_decode64!(encoded_token, padding: false)
   end
 
   @doc """

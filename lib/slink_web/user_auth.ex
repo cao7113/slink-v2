@@ -41,13 +41,6 @@ defmodule SlinkWeb.UserAuth do
   end
 
   @doc """
-  Manually get magic-link url to login, mainly used for dev testing
-  """
-  def get_login_magic_link_url(%Accounts.User{} = user) do
-    Accounts.get_login_magic_link_url(user, &SlinkWeb.UserLive.Login.login_magic_link/1)
-  end
-
-  @doc """
   Logs the user out.
 
   It clears all session data for safety. See renew_session.
@@ -79,37 +72,6 @@ defmodule SlinkWeb.UserAuth do
       |> maybe_reissue_user_session_token(user, token_inserted_at)
     else
       nil -> assign(conn, :current_scope, Scope.for_user(nil))
-    end
-  end
-
-  ## API
-
-  def fetch_current_scope_for_api_user(conn, _opts \\ []) do
-    with [<<bearer::binary-size(6), " ", token::binary>>] <-
-           get_req_header(conn, "authorization"),
-         true <- String.downcase(bearer) == "bearer",
-         {:ok, user} <- Accounts.fetch_user_by_api_token(token) do
-      assign(conn, :current_scope, Scope.for_user(user))
-    else
-      _ ->
-        assign(conn, :current_scope, Scope.for_user(nil))
-        # conn
-        # |> send_resp(:unauthorized, "No access for you")
-        # |> halt()
-    end
-  end
-
-  @doc """
-  Plug for routes that require the user to be authenticated.
-  """
-  def require_authenticated_api_user(conn, _opts) do
-    if conn.assigns.current_scope && conn.assigns.current_scope.user do
-      conn
-    else
-      conn
-      |> put_status(:unauthorized)
-      |> json(%{message: "Unauthorized user to continue!"})
-      |> halt()
     end
   end
 
