@@ -72,6 +72,7 @@ defmodule Slink.MixProject do
 
       # Dev Tools
       {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:tidewave, "~> 0.3", only: [:dev]},
       {:git_ops, "~> 2.0", only: [:dev], runtime: false}
     ]
   end
