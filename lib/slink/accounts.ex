@@ -6,7 +6,47 @@ defmodule Slink.Accounts do
   import Ecto.Query, warn: false
   alias Slink.Repo
 
-  alias Slink.Accounts.{User, UserToken, UserNotifier}
+  alias Slink.Accounts.{User, UserToken, UserNotifier, Scope}
+
+  ## My UserToken
+
+  @doc """
+  Subscribes to scoped notifications about any user-token changes.
+
+  The broadcasted messages match the pattern:
+
+    * {:created, %UserToken{}}
+    * {:deleted, %UserToken{}}
+
+  """
+  def subscribe_user_tokens(%Scope{} = scope) do
+    key = scope.user.id
+
+    Phoenix.PubSub.subscribe(Slink.PubSub, "user:#{key}:user_tokens")
+  end
+
+  def broadcast_user_token(%Scope{} = scope, message) do
+    key = scope.user.id
+    Phoenix.PubSub.broadcast(Slink.PubSub, "user:#{key}:user_tokens", message)
+  end
+
+  def list_user_tokens(%Scope{} = scope) do
+    from(t in UserToken, where: t.user_id == ^scope.user.id)
+    |> order_by(desc: :id)
+    |> Repo.all()
+  end
+
+  def get_user_token!(%Scope{} = scope, id) do
+    from(t in UserToken, where: t.user_id == ^scope.user.id and t.id == ^id)
+    |> Repo.one!()
+  end
+
+  def delete_user_token(%Scope{} = scope, %UserToken{} = user_token) do
+    with true <- scope.user.id == user_token.user_id do
+      Repo.delete(user_token)
+      broadcast_user_token(scope, {:deleted, user_token})
+    end
+  end
 
   ## API
 
@@ -17,9 +57,20 @@ defmodule Slink.Accounts do
   This token cannot be recovered from the database.
   """
   def create_user_api_token(user) do
-    {encoded_token, user_token} = UserToken.build_email_token(user, "api-token")
-    Repo.insert!(user_token)
+    {encoded_token, _user_token} = do_create_user_api_token(user)
     encoded_token
+  end
+
+  def create_user_api_token(%Scope{} = _scope, user) do
+    {encoded_token, user_token} = do_create_user_api_token(user)
+    # broadcast_user_token(scope, {:created, user_token})
+    {encoded_token, user_token}
+  end
+
+  def do_create_user_api_token(user) do
+    {encoded_token, user_token} = UserToken.build_email_token(user, "api-token")
+    user_token = Repo.insert!(user_token)
+    {encoded_token, user_token}
   end
 
   @doc """

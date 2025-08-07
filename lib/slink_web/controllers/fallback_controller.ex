@@ -6,8 +6,14 @@ defmodule SlinkWeb.FallbackController do
   """
   use SlinkWeb, :controller
 
+  require Logger
+
   # This clause handles errors returned by Ecto's insert/update/delete.
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
+    Logger.warning(
+      "Hit changeset error: #{inspect(changeset)} on #{conn.method} #{conn.request_path}"
+    )
+
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(json: SlinkWeb.ChangesetJSON)
@@ -16,6 +22,8 @@ defmodule SlinkWeb.FallbackController do
 
   # This clause is an example of how to handle resources that cannot be found.
   def call(conn, {:error, :not_found}) do
+    Logger.warning("Hit not-found on #{conn.method} #{conn.request_path}")
+
     conn
     |> put_status(:not_found)
     |> put_view(html: SlinkWeb.ErrorHTML, json: SlinkWeb.ErrorJSON)

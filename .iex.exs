@@ -29,6 +29,7 @@ alias TestHelpers, as: Th
 
 ## Data
 u1 = User.find(1)
-## API
+
+## Ops API
 # A.create_user_api_token(A.get_user!(1))
 # UserAuth.get_login_magic_link_url(User.find(1))

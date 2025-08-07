@@ -37,7 +37,6 @@ defmodule Slink.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
-      {:git_ops, "~> 2.0", only: [:dev], runtime: false},
       {:phoenix, "~> 1.8.0-rc.4", override: true},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
@@ -64,15 +63,16 @@ defmodule Slink.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:endon, "~> 2.0"},
 
       # App enhancement
+      {:endon, "~> 2.0"},
       {:flop, "~> 0.26.3"},
       # smtp support for gmail
       {:gen_smtp, "~> 1.3"},
 
       # Dev Tools
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:git_ops, "~> 2.0", only: [:dev], runtime: false}
     ]
   end
 

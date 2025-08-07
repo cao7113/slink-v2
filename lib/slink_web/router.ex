@@ -78,6 +78,8 @@ defmodule SlinkWeb.Router do
         live "/links/new", LinkLive.Form, :new
         live "/links/:id", LinkLive.Show, :show
         live "/links/:id/edit", LinkLive.Form, :edit
+
+        live "/user_tokens", UserTokenLive.Index, :index
       end
     end
 

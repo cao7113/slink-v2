@@ -112,7 +112,7 @@ defmodule Slink.LinksTest do
     test "manual inserted_at" do
       scope = user_scope_fixture()
       link = link_fixture(scope)
-      attrs = link |> Link.get_create_attrs()
+      attrs = link |> Link.get_new_attrs()
 
       manual_inserted_at =
         DateTime.utc_now() |> DateTime.add(-48, :hour) |> DateTime.truncate(:second)

@@ -120,6 +120,9 @@ defmodule SlinkWeb.UserLive.Login do
      |> push_navigate(to: ~p"/users/log-in")}
   end
 
+  @doc """
+  Get login magic-link url for a token
+  """
   def login_magic_link(token), do: url(~p"/users/log-in/#{token}")
 
   defp local_mail_adapter? do

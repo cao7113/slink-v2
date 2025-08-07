@@ -81,7 +81,7 @@ defmodule Remote do
       items
       |> Enum.with_index(fn link, idx ->
         Logger.info("downloading [#{idx}] id=#{link.id} #{link.url}")
-        attrs = Link.get_create_attrs(link)
+        attrs = Link.get_new_attrs(link)
 
         with cs <- Link.new_changeset(attrs),
              {:ok, new_link} <- Slink.Repo.insert(cs) do
@@ -107,7 +107,7 @@ defmodule Remote do
       :erpc.call(node, Slink.Links.Link, :find_by, [[url: link.url]])
       |> case do
         nil ->
-          attrs = Link.get_create_attrs(link)
+          attrs = Link.get_new_attrs(link)
           new_link = :erpc.call(node, Slink.Links.Link, :create!, [attrs])
           Logger.info("created remote link #{new_link.id}")
 

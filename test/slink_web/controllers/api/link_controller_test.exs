@@ -35,6 +35,8 @@ defmodule SlinkWeb.Api.LinkControllerTest do
   end
 
   describe "create link" do
+    @describetag capture_log: true
+
     test "renders link when data is valid", %{conn: conn} do
       conn = post(conn, ~p"/api/links", link: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
@@ -82,6 +84,7 @@ defmodule SlinkWeb.Api.LinkControllerTest do
   end
 
   describe "update link" do
+    @describetag capture_log: true
     setup [:create_link]
 
     test "renders link when data is valid", %{conn: conn, link: %Link{id: id} = link} do

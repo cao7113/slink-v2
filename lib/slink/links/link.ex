@@ -36,16 +36,22 @@ defmodule Slink.Links.Link do
     |> unique_constraint(:url, name: "links_url_index")
   end
 
+  @doc """
+  New changeset allow inserted_at, updated_at builtin attributes
+  """
   def new_changeset(attrs \\ %{}) do
     %__MODULE__{}
     |> Ecto.Changeset.change(attrs)
     |> unique_constraint(:url, name: "links_url_index")
   end
 
-  def get_create_attrs(link) do
+  @doc """
+  Get new attributes from a link struct.
+  """
+  def get_new_attrs(%__MODULE__{} = link) do
     link
     |> Map.from_struct()
-    # ignore local :id to avoid id-sequence crash
+    # ignore local :id to avoid id-sequence conflict
     |> Map.take([
       :title,
       :url,
