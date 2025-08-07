@@ -2,8 +2,8 @@
 version: "3"
 vars:
   LOCAL_MAGIC_COOKIE: slink
-  DOCKER_IMG_NAME: slinkv2
-  DOCKER_CONTAINER_NAME: slinkv2
+  DOCKER_IMG_NAME: slink
+  DOCKER_CONTAINER_NAME: slink
   DEV_API_HOST: http://localhost:4000
 includes:
   # task f:iex
@@ -73,7 +73,7 @@ tasks:
       - rc6
     env:
       ERL_AFLAGS: "-proto_dist inet6_tcp -kernel shell_history enabled"
-      CLUSTER_APP_NAME: "slink-v2"
+      CLUSTER_APP_NAME: "slink"
       RELEASE_COOKIE: happy-cookie-not-secret-but-for-cluster
     cmds:
       - echo "==Custerning into remote app ${CLUSTER_APP_NAME}"

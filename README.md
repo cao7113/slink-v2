@@ -1,9 +1,13 @@
-# SlinkV2
+# Slink - Share up links
 
 Refactor Slink from scratch, because:
 
 - phoenix1.8 phx.gen.auth changed greatly based on user-scope
 - want to a better codebase and relearning phoenix
+
+## Site
+
+- https://slink.fly.dev
 
 ## Develop
 

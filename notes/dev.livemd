@@ -1,4 +1,4 @@
-# SlinkV2 Dev Notes
+# Slink Dev Notes
 
 ```elixir
 Mix.install([

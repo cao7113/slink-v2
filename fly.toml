@@ -1,44 +1,40 @@
-# fly.toml app configuration file generated for slink-v2 on 2025-07-23T16:32:35+08:00
+# fly.toml app configuration file generated for slink on 2025-08-07T15:42:55+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'slink-v2'
+app = 'slink'
 primary_region = 'nrt'
 kill_signal = 'SIGTERM'
 
 [build]
 
 [deploy]
-release_command = '/app/bin/migrate'
+  release_command = '/app/bin/migrate'
 
 [env]
-PHX_HOST = 'slink-v2.fly.dev'
-PORT = '8080'
-ECTO_IPV6 = 'true'
-MAILER_SMTP_GMAIL_ENABLED = "true"
-
-## distribution
-ERL_AFLAGS = '-proto_dist inet6_tcp'
-RELEASE_DISTRIBUTION = 'name'
-RELEASE_COOKIE = "happy-cookie-not-secret-but-for-cluster"
-# below dynamic set in rel/env.sh.eex for flyio app
-# RELEASE_NODE = "slink@slink-v2.internal"
+  ECTO_IPV6 = 'true'
+  ERL_AFLAGS = '-proto_dist inet6_tcp'
+  MAILER_SMTP_GMAIL_ENABLED = 'true'
+  PHX_HOST = 'slink.fly.dev'
+  PORT = '8080'
+  RELEASE_COOKIE = 'happy-cookie-not-secret-but-for-cluster'
+  RELEASE_DISTRIBUTION = 'name'
 
 [http_service]
-internal_port = 8080
-force_https = true
-auto_stop_machines = 'suspend'
-auto_start_machines = true
-min_machines_running = 1
-processes = ['app']
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'suspend'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
 
-[http_service.concurrency]
-type = 'connections'
-hard_limit = 1000
-soft_limit = 1000
+  [http_service.concurrency]
+    type = 'connections'
+    hard_limit = 1000
+    soft_limit = 1000
 
 [[vm]]
-memory = '512mb'
-cpu_kind = 'shared'
-cpus = 1
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

@@ -4,7 +4,7 @@ version: "3"
 ## Fly.io https://hexdocs.pm/phoenix/fly.html
 # https://fly.io/docs/elixir/getting-started/
 vars:
-  FLY_APP_NAME: slink-v2
+  FLY_APP_NAME: slink
   FLY_DB_APP_NAME: shareup-db
   APP_NAME: slink
 
@@ -17,7 +17,7 @@ tasks:
   sh: fly ssh console
   st: fly status
   # create new app and fly.toml, --no-deploy wait to add secrets
-  launch: fly launch # --no-deploy --debug --verbose # --now
+  launch: fly launch --no-deploy --debug --verbose # --now
   dep: fly deploy
   dig: fly dig {{.FLY_APP_NAME}}.internal
   s1: fly scale count 1 --yes
@@ -25,14 +25,13 @@ tasks:
   ping: curl https://{{.FLY_APP_NAME}}.fly.dev/ping
   # fly machine clone MACHINE_ID --region NEW_REGION
   # fly scale count 3 --region "nrt,hkg" --yes
-  # curl https://hello-phx-api-only.fly.dev/info | jq ".flyio.FLY_MACHINE_ID"
   s3: fly scale count 3 --region "nrt,hkg,sin" --yes
   # fly scale count 8 --max-per-region 1 --region bom,fra,gru,hkg,nrt,ord,scl,syd
   show: fly scale show
   # deploy new app version
   upl: fly deploy --build-arg GIT_COMMIT_ID=$(git log -1 --format="%H") --build-arg GIT_COMMIT_TIME=$(git log -1 --format="%ct")
   # task f:upv -- v0.1.6
-  upv: fly deploy --image ghcr.io/cao7113/hello-phx-api-only:{{.CLI_ARGS}} --debug --verbose
+  upv: fly deploy --image ghcr.io/cao7113/slink:{{.CLI_ARGS}} --debug --verbose
   up: |
     latest_tag=$(git describe --tags $(git rev-list --tags --max-count=1))
     echo "deploying latest tag: $latest_tag"
