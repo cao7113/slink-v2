@@ -3,6 +3,7 @@ defmodule SlinkWeb.UserLive.Confirmation do
 
   alias Slink.Accounts
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -71,6 +72,7 @@ defmodule SlinkWeb.UserLive.Confirmation do
     """
   end
 
+  @impl true
   def mount(%{"token" => token}, _session, socket) do
     if user = Accounts.get_user_by_magic_link_token(token) do
       form = to_form(%{"token" => token}, as: "user")
@@ -85,6 +87,7 @@ defmodule SlinkWeb.UserLive.Confirmation do
     end
   end
 
+  @impl true
   def handle_event("submit", %{"user" => params}, socket) do
     {:noreply, assign(socket, form: to_form(params, as: "user"), trigger_submit: true)}
   end

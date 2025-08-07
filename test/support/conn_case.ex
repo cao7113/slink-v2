@@ -71,6 +71,14 @@ defmodule SlinkWeb.ConnCase do
     |> Plug.Conn.put_session(:user_token, token)
   end
 
+  defp maybe_set_token_authenticated_at(_token, nil), do: nil
+
+  defp maybe_set_token_authenticated_at(token, authenticated_at) do
+    Slink.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
+  end
+
+  ## API
+
   def put_user_api_token(conn, opts \\ []) do
     api_token =
       Keyword.get_lazy(opts, :api_token, fn ->
@@ -81,11 +89,5 @@ defmodule SlinkWeb.ConnCase do
 
     conn
     |> Plug.Conn.put_req_header("authorization", api_token)
-  end
-
-  defp maybe_set_token_authenticated_at(_token, nil), do: nil
-
-  defp maybe_set_token_authenticated_at(token, authenticated_at) do
-    Slink.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
   end
 end

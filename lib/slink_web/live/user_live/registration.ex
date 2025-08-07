@@ -4,6 +4,7 @@ defmodule SlinkWeb.UserLive.Registration do
   alias Slink.Accounts
   alias Slink.Accounts.User
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -40,17 +41,20 @@ defmodule SlinkWeb.UserLive.Registration do
     """
   end
 
+  @impl true
   def mount(_params, _session, %{assigns: %{current_scope: %{user: user}}} = socket)
       when not is_nil(user) do
     {:ok, redirect(socket, to: SlinkWeb.UserAuth.signed_in_path(socket))}
   end
 
   def mount(_params, _session, socket) do
-    changeset = Accounts.change_user_email(%User{})
+    # changeset = Accounts.change_user_email(%User{})
+    changeset = Accounts.change_user_email(%User{}, %{}, validate_unique: false)
 
     {:ok, assign_form(socket, changeset), temporary_assigns: [form: nil]}
   end
 
+  @impl true
   def handle_event("save", %{"user" => user_params}, socket) do
     case Accounts.register_user(user_params) do
       {:ok, user} ->
@@ -74,7 +78,8 @@ defmodule SlinkWeb.UserLive.Registration do
   end
 
   def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = Accounts.change_user_email(%User{}, user_params)
+    # changeset = Accounts.change_user_email(%User{}, user_params)
+    changeset = Accounts.change_user_email(%User{}, user_params, validate_unique: false)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 

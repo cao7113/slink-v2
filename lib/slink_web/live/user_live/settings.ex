@@ -5,6 +5,7 @@ defmodule SlinkWeb.UserLive.Settings do
 
   alias Slink.Accounts
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -65,6 +66,7 @@ defmodule SlinkWeb.UserLive.Settings do
     """
   end
 
+  @impl true
   def mount(%{"token" => token}, _session, socket) do
     socket =
       case Accounts.update_user_email(socket.assigns.current_scope.user, token) do
@@ -93,6 +95,7 @@ defmodule SlinkWeb.UserLive.Settings do
     {:ok, socket}
   end
 
+  @impl true
   def handle_event("validate_email", params, socket) do
     %{"user" => user_params} = params
 

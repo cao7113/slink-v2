@@ -3,6 +3,7 @@ defmodule SlinkWeb.UserLive.Login do
 
   alias Slink.Accounts
 
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
@@ -89,6 +90,7 @@ defmodule SlinkWeb.UserLive.Login do
     """
   end
 
+  @impl true
   def mount(_params, _session, socket) do
     email =
       Phoenix.Flash.get(socket.assigns.flash, :email) ||
@@ -99,6 +101,7 @@ defmodule SlinkWeb.UserLive.Login do
     {:ok, assign(socket, form: form, trigger_submit: false)}
   end
 
+  @impl true
   def handle_event("submit_password", _params, socket) do
     {:noreply, assign(socket, :trigger_submit, true)}
   end
