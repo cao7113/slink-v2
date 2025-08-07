@@ -5,6 +5,21 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## v0.3.0 (2025-08-07)
+
+
+
+
+### Features:
+
+* add basic my/user_tokens live page by Ryn Cao
+
+### Improvements:
+
+* add url href link in Link show live by Ryn Cao
+
+* add smtp-gmail support by Ryn Cao
+
 ## v0.2.3 (2025-08-05)
 
 
